@@ -51,7 +51,7 @@ def save_srt(transcript, srt_path, video_duration):
     print(f"Subtitles saved: {srt_path}")
 
 def burn_subtitles(video_path, srt_path, output_path):
-    """Burns subtitles onto the video using ffmpeg."""
+    """Burns subtitles onto the video using ffmpeg and ensures vertical aspect ratio (9:16)."""
     # Ensure the output directory exists
     output_dir = os.path.dirname(output_path)
     if not os.path.exists(output_dir):
@@ -61,11 +61,11 @@ def burn_subtitles(video_path, srt_path, output_path):
     if not os.path.exists(srt_path):
         raise FileNotFoundError(f"SRT file not found: {srt_path}")
 
-    # Construct and run the ffmpeg command
+    # Construct and run the ffmpeg command to ensure vertical aspect ratio
     command = [
         "ffmpeg",
         "-i", video_path,
-        "-vf", f"subtitles={srt_path}",
+        "-vf", f"subtitles={srt_path},scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2",
         "-c:a", "copy",
         output_path
     ]
@@ -73,17 +73,17 @@ def burn_subtitles(video_path, srt_path, output_path):
     subprocess.run(command, check=True)
     print(f"Video with subtitles saved: {output_path}")
 
-def burn_subtitles(video_path, srt_path, output_path):
-    """Burns subtitles onto the video using ffmpeg."""
-    command = [
-        "ffmpeg",
-        "-i", video_path,
-        "-vf", f"subtitles={srt_path}",
-        "-c:a", "copy",
-        output_path
-    ]
-    subprocess.run(command, check=True)
-    print(f"Video with subtitles saved: {output_path}")
+# def burn_subtitles(video_path, srt_path, output_path):
+#     """Burns subtitles onto the video using ffmpeg."""
+#     command = [
+#         "ffmpeg",
+#         "-i", video_path,
+#         "-vf", f"subtitles={srt_path}",
+#         "-c:a", "copy",
+#         output_path
+#     ]
+#     subprocess.run(command, check=True)
+#     print(f"Video with subtitles saved: {output_path}")
 def save_ass(transcript, ass_path, video_duration):
     """Saves the transcript as an ASS subtitle file with custom styling."""
     words = transcript.split()  # Split transcript into words

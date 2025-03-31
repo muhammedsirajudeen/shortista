@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,22 +8,25 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
+
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen flex-col">
     <div class="bg-gray-800 p-8 rounded-xl shadow-lg w-full max-w-md text-center">
         <h1 class="text-3xl font-bold mb-4">YouTube Clip Generator</h1>
         <p class="text-gray-400 mb-6">Enter a YouTuber's name to generate a highlight clip.</p>
-        
-        <input type="text" id="youtuber" placeholder="Enter YouTuber's name" 
-               class="w-full p-3 rounded-lg border-2 border-gray-700 focus:border-blue-500 focus:outline-none bg-gray-700 text-white placeholder-gray-400 mb-4">
-        
-        <button id="submit" 
-                class="w-full bg-blue-600 hover:bg-blue-700 transition-colors p-3 rounded-lg font-semibold">
+
+        <input type="text" id="youtuber" placeholder="Enter YouTuber's name"
+            class="w-full p-3 rounded-lg border-2 border-gray-700 focus:border-blue-500 focus:outline-none bg-gray-700 text-white placeholder-gray-400 mb-4">
+
+        <button id="submit" class="w-full bg-blue-600 hover:bg-blue-700 transition-colors p-3 rounded-lg font-semibold">
             Generate Clip
         </button>
     </div>
+    <button id="short" class="mt-4 bg-blue-600 hover:bg-blue-700 transition-colors p-3 rounded-lg font-semibold">
+        Generate Clip
+    </button>
 
     <script>
-        document.getElementById("submit").addEventListener("click", async function() {
+        document.getElementById("submit").addEventListener("click", async function () {
             const input = document.getElementById("youtuber").value;
             if (!input) {
                 Swal.fire({
@@ -32,7 +36,7 @@
                 });
                 return;
             }
-            
+
             Swal.fire({
                 title: 'Generating Clip...',
                 text: 'Please wait while we process the video.',
@@ -41,7 +45,7 @@
                     Swal.showLoading();
                 }
             });
-            
+
             try {
                 const response = await fetch("/generate-clip", {
                     method: "POST",
@@ -50,9 +54,9 @@
                     },
                     body: JSON.stringify({ youtuber: input })
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (response.ok) {
                     Swal.fire({
                         icon: 'success',
@@ -60,7 +64,48 @@
                         text: `Your highlight clip for ${input} is ready! 🎉\n${data.clip_url}`,
                         confirmButtonText: 'Watch Clip'
                     }).then(() => {
-                      console.log('maybe something to do later here ')
+                        console.log('maybe something to do later here ')
+                    });
+                } else {
+                    throw new Error(data.error || "Something went wrong");
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: error.message
+                });
+            }
+        });
+        document.getElementById("short").addEventListener("click", async function () {
+
+
+            Swal.fire({
+                title: 'Generating Clip...',
+                text: 'Please wait while we process the video.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            try {
+                const response = await fetch("/upload-short", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Clip Ready!',
+                        confirmButtonText: 'Watch Clip'
+                    }).then(() => {
+                        console.log('maybe something to do later here ')
                     });
                 } else {
                     throw new Error(data.error || "Something went wrong");
@@ -75,4 +120,5 @@
         });
     </script>
 </body>
+
 </html>

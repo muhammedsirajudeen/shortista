@@ -4,6 +4,9 @@ from helper import convert_duration_to_seconds
 from googleapiclient.discovery import build
 from slicer import slicer_entry_point
 from caption_generator import caption_generator
+from upload_youtube import upload_short
+from title_description import generate_title_from_ass
+import os
 youtube = build('youtube', 'v3', developerKey=API_KEY)
 
 def get_data_urls(query):
@@ -58,7 +61,25 @@ def entrypoint(query):
     video_urls=get_data_urls(query)
     print(video_urls)
     download_multiple_videos(video_urls)
+    # cut_video=slicer_entry_point()
+    # captioned_video=caption_generator(cut_video)
+    # print(captioned_video)
+    # #upload to youtube thats the pending work
+    # title=generate_title_from_ass()
+    # upload_short(captioned_video, title,title)
+
+def upload_short_helper():
     cut_video=slicer_entry_point()
     captioned_video=caption_generator(cut_video)
     print(captioned_video)
     #upload to youtube thats the pending work
+    title=generate_title_from_ass()
+    upload_short(captioned_video, title,title)
+    # Remove the captioned video file after uploading
+    if os.path.exists(captioned_video):
+        os.remove(captioned_video)
+        print(f"Removed captioned video: {captioned_video}")
+    else:
+        print(f"Captioned video not found: {captioned_video}")
+
+
