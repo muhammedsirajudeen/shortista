@@ -1,0 +1,33 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+.env/
+.venv/
+*.env
+
+# Logs
+*.log
+
+# Compiled files
+*.pyc
+*.pyo
+
+# Media files
+*.mp4
+*.mp3
+*.wav
+*.ass
+*.srt
+*.aac
+*.srt 
+*.ass
+# IDE files
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
