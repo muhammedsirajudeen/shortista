@@ -39,15 +39,25 @@ def get_data_urls(query):
 
 
 def download_video(video_url, output_dir='downloads'):
-    ydl_opts = {
-        'outtmpl': f'{output_dir}/%(title)s.%(ext)s',  # Save with video title as the filename
-        'format': 'best',  # Download the best quality video
-        'quiet': False,  # Set to True for less output
-    }
+    # TODO: if this fails we have to ensure that the remaining buffer is cleaned up
+    video_filename=None
+    try:
+        ydl_opts = {
+            'outtmpl': f'{output_dir}/%(title)s.%(ext)s',  # Save with video title as the filename
+            'format': 'best',  # Download the best quality video
+            'quiet': False,  # Set to True for less output
+        }
 
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([video_url])
-
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info_dict = ydl.extract_info(video_url, download=False)  # Extract info without downloading
+            video_title = info_dict.get('title', 'unknown_title')
+            video_ext = info_dict.get('ext', 'mp4')  # Default to mp4 if extension is not found
+            video_filename = f"{output_dir}/{video_title}.{video_ext}"
+            ydl.download([video_url])
+    except Exception as e:
+        # Perform cleanup operations here
+        print(f"Error in downloading video: {e}")
+        print(f"Expected video file: {video_filename}")
 def download_multiple_videos(video_urls):
     for idx, url in enumerate(video_urls, 1):
         print(f"Downloading video {idx}: {url}")
