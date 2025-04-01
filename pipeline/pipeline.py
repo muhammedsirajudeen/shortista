@@ -93,3 +93,16 @@ def upload_short_helper():
         print(f"Captioned video not found: {captioned_video}")
 
 
+# still there are some unprecendented errors that needs to be taken care of
+# also access token and refresh token should be stored along with scope in the future
+        #  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#   File "/home/vava/Programming/Projects/shortista/index.py", line 21, in upload_shorts
+#     upload_short_helper()
+#   File "/home/vava/Programming/Projects/shortista/pipeline/pipeline.py", line 87, in upload_short_helper
+#     upload_short(captioned_video, title,title)
+#   File "/home/vava/Programming/Projects/shortista/upload_youtube.py", line 57, in upload_short
+#     request = youtube.videos().insert(
+#               ^^^^^^^^^^^^^^^^^^^^^^^^
+# AttributeError: 'NoneType' object has no attribute 'videos'
+# try to fix this error as well
+# fix aspect ratio issue as well and then scale hard

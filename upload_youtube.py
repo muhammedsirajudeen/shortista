@@ -3,7 +3,7 @@ import os
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
 import googleapiclient.http
-
+import socket
 # YouTube API Scopes
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
 CLIENT_SECRETS_FILE = "client_secret.json"
@@ -24,18 +24,29 @@ def kill_process_on_port(port):
     print(f"No process found running on port {port}")
     return False
 
+def is_port_in_use(port):
+    """Checks if a port is in use."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        return s.connect_ex(('localhost', port)) == 0
+
 def get_authenticated_service():
+    port = 8080  # Move this to an environment variable if needed
+
+    # Check if the port is in use and kill the process if necessary
+    if is_port_in_use(port):
+        print(f"Port {port} is in use. Attempting to free it...")
+        if not kill_process_on_port(port):
+            raise RuntimeError(f"Failed to free port {port}. Please check manually.")
+
     try:
         flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
             CLIENT_SECRETS_FILE, SCOPES
         )
-        credentials = flow.run_local_server(port=8080, open_browser=True)
-    except:
-        # move this port to env and document env as well
-        kill_process_on_port(8080)
-        print('Error in authenticating with google')
-
-    return googleapiclient.discovery.build("youtube", "v3", credentials=credentials)
+        credentials = flow.run_local_server(port=port, open_browser=True)
+        return googleapiclient.discovery.build("youtube", "v3", credentials=credentials)
+    except Exception as e:
+        print(f"Error in authenticating with Google: {e}")
+        return None
 
 def upload_short(video_path, title, description, category_id="22", privacy_status="public"):
     youtube = get_authenticated_service()
