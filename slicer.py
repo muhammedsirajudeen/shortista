@@ -26,11 +26,17 @@ def select_random_video(directory):
         raise ValueError("No video files found in the directory")
 
 def cut_video(input_video_path, output_video_path, start_time=0, duration=45):
-    video = VideoFileClip(input_video_path)
+    output_width = 1080
+    output_height = 1920
+    # still not resizing check it later
+
+    video = VideoFileClip(input_video_path).resized(width=output_width)
+    video=video.cropped(y_center=video.h / 2,height=output_height)
+    
     duration=get_video_duration(input_video_path)
     random_start_time=random.randint(0,duration-60)
-    cut_video = video.subclipped(random_start_time, random_start_time + SHORT_DURATION )
-    cut_video.write_videofile(output_video_path, codec="libx264")
+    cut = video.subclipped(random_start_time, random_start_time + SHORT_DURATION )
+    cut.write_videofile(output_video_path, codec="libx264")
 
 def slicer_entry_point():
     downloads_dir = "downloads"  #
